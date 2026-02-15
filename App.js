@@ -2,7 +2,9 @@ import MusicPlayer from './components/MusicPlayer.js'
 import Upload from './components/Upload.js'
 
 // API 基础 URL 配置
-// 开发环境使用空字符串（相对路径），生产环境可以改为实际的后端地址
+// 指向后端服务器的地址
+// 如果前端和后端在同一域名下，使用空字符串
+// 如果后端在不同地址，需要指定完整 URL
 const API_BASE_URL = ''
 
 export default {
