@@ -1,0 +1,18 @@
+{
+  "146wyx": [
+    {
+      "id": 1,
+      "title": "3.6.5",
+      "artist": "EXO",
+      "album": "",
+      "cover": "/data/Segment/3.6.5 - EXO.jpg",
+      "url": "/data/music/3.6.5 - EXO.mp3",
+      "filename": "3.6.5 - EXO.mp3",
+      "hasLyrics": true,
+      "lrcUrl": "/data/lrc/3.6.5-EXO.lrc",
+      "hasCover": true,
+      "coverUrl": "/data/Segment/3.6.5 - EXO.jpg",
+      "duration": 187
+    }
+  ]
+}

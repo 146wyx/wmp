@@ -122,6 +122,7 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         """Handle GET requests"""
         parsed_path = urlparse(self.path)
+        print(f"[GET] Received request: {parsed_path.path}")
 
         # Redirect HTTP to HTTPS (if this is an HTTP request and HTTPS is available)
         host = self.headers.get('Host', '')
@@ -144,6 +145,11 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
         if parsed_path.path.startswith('/api/lyrics/'):
             filename = unquote(parsed_path.path[len('/api/lyrics/'):])
             self.handle_get_lyrics(filename)
+            return
+
+        # API: Get favorites
+        if parsed_path.path == '/api/favorites':
+            self.handle_get_favorites()
             return
 
         # Default: Static file service
