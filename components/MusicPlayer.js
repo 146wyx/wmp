@@ -1,3 +1,6 @@
+// API 基础 URL 配置
+const API_BASE_URL = ''
+
 export default {
   name: 'MusicPlayer',
   props: {
@@ -76,7 +79,7 @@ export default {
     const loadMusicList = async () => {
       isLoading.value = true
       try {
-        const response = await fetch('/api/music-list')
+        const response = await fetch(`${API_BASE_URL}/api/music-list`)
         const result = await response.json()
 
         if (result.success && result.data.length > 0) {

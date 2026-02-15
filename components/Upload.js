@@ -1,3 +1,6 @@
+// API 基础 URL 配置
+const API_BASE_URL = ''
+
 export default {
   name: 'Upload',
   emits: ['files-uploaded', 'close'],
@@ -204,7 +207,7 @@ export default {
       formData.append('file', fileObj.file)
       formData.append('type', type)
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
         body: formData
       })

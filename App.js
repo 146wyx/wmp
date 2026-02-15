@@ -1,6 +1,10 @@
 import MusicPlayer from './components/MusicPlayer.js'
 import Upload from './components/Upload.js'
 
+// API 基础 URL 配置
+// 开发环境使用空字符串（相对路径），生产环境可以改为实际的后端地址
+const API_BASE_URL = ''
+
 export default {
   name: 'App',
   components: {
@@ -159,7 +163,7 @@ export default {
       authError.value = ''
 
       try {
-        const response = await fetch('/api/login', {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -216,7 +220,7 @@ export default {
       authError.value = ''
 
       try {
-        const response = await fetch('/api/register', {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -284,7 +288,7 @@ export default {
       authError.value = ''
 
       try {
-        const response = await fetch('/api/change-password', {
+        const response = await fetch(`${API_BASE_URL}/api/change-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -328,7 +332,7 @@ export default {
       }
 
       try {
-        const response = await fetch(`/api/favorites?email=${encodeURIComponent(currentUser.value.email)}`)
+        const response = await fetch(`${API_BASE_URL}/api/favorites?username=${encodeURIComponent(currentUser.value.username)}`)
         const result = await response.json()
 
         if (result.success) {
@@ -354,11 +358,11 @@ export default {
       }
 
       try {
-        const response = await fetch('/api/favorites/add', {
+        const response = await fetch(`${API_BASE_URL}/api/favorites/add`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: currentUser.value.email,
+            username: currentUser.value.username,
             song: song
           })
         })
@@ -386,11 +390,11 @@ export default {
       if (!isLoggedIn.value || !currentUser.value) return false
 
       try {
-        const response = await fetch('/api/favorites/remove', {
+        const response = await fetch(`${API_BASE_URL}/api/favorites/remove`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: currentUser.value.email,
+            username: currentUser.value.username,
             filename: filename
           })
         })

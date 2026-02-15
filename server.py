@@ -160,6 +160,7 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
         parsed_path = urlparse(self.path)
+        print(f"[POST] Received request: {parsed_path.path}")
 
         # API: File upload
         if parsed_path.path == '/api/upload':
@@ -682,17 +683,17 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
     def handle_get_favorites(self):
         """Handle get user favorites"""
         try:
-            # Get email from query params
+            # Get username from query params
             parsed_path = urlparse(self.path)
             query_params = parse_qs(parsed_path.query)
-            email = query_params.get('email', [''])[0].strip()
+            username = query_params.get('username', [''])[0].strip()
 
-            if not email:
-                self.send_json_response({'success': False, 'error': 'Email is required'}, 400)
+            if not username:
+                self.send_json_response({'success': False, 'error': 'Username is required'}, 400)
                 return
 
             favorites = load_favorites()
-            user_favorites = favorites.get(email, [])
+            user_favorites = favorites.get(username, [])
 
             self.send_json_response({
                 'success': True,
@@ -713,33 +714,33 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
                 self.send_json_response({'success': False, 'error': 'Invalid request body'}, 400)
                 return
 
-            email = data.get('email', '').strip()
+            username = data.get('username', '').strip()
             song = data.get('song')
 
-            if not email or not song:
+            if not username or not song:
                 self.send_json_response({'success': False, 'error': 'Missing required fields'}, 400)
                 return
 
             favorites = load_favorites()
 
-            if email not in favorites:
-                favorites[email] = []
+            if username not in favorites:
+                favorites[username] = []
 
             # Check if song already exists in favorites
-            existing = [f for f in favorites[email] if f.get('filename') == song.get('filename')]
+            existing = [f for f in favorites[username] if f.get('filename') == song.get('filename')]
             if existing:
                 self.send_json_response({'success': False, 'error': 'Song already in favorites'}, 409)
                 return
 
             # Add song to favorites
-            favorites[email].append(song)
+            favorites[username].append(song)
 
             if save_favorites(favorites):
-                print(f"[ADD_FAVORITE] Added favorite for: {email}")
+                print(f"[ADD_FAVORITE] Added favorite for: {username}")
                 self.send_json_response({
                     'success': True,
                     'message': 'Added to favorites',
-                    'data': favorites[email]
+                    'data': favorites[username]
                 })
             else:
                 self.send_json_response({'success': False, 'error': 'Failed to save favorite'}, 500)
@@ -758,28 +759,28 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
                 self.send_json_response({'success': False, 'error': 'Invalid request body'}, 400)
                 return
 
-            email = data.get('email', '').strip()
+            username = data.get('username', '').strip()
             filename = data.get('filename')
 
-            if not email or not filename:
+            if not username or not filename:
                 self.send_json_response({'success': False, 'error': 'Missing required fields'}, 400)
                 return
 
             favorites = load_favorites()
 
-            if email not in favorites:
+            if username not in favorites:
                 self.send_json_response({'success': False, 'error': 'No favorites found'}, 404)
                 return
 
             # Remove song from favorites
-            favorites[email] = [f for f in favorites[email] if f.get('filename') != filename]
+            favorites[username] = [f for f in favorites[username] if f.get('filename') != filename]
 
             if save_favorites(favorites):
-                print(f"[REMOVE_FAVORITE] Removed favorite for: {email}")
+                print(f"[REMOVE_FAVORITE] Removed favorite for: {username}")
                 self.send_json_response({
                     'success': True,
                     'message': 'Removed from favorites',
-                    'data': favorites[email]
+                    'data': favorites[username]
                 })
             else:
                 self.send_json_response({'success': False, 'error': 'Failed to remove favorite'}, 500)
@@ -1009,7 +1010,7 @@ def run_server(port=80, https_port=443, dual_stack=True, use_https=True):
     print(f"  POST http://localhost:{port}/api/upload")
     print(f"  POST http://localhost:{port}/api/register")
     print(f"  POST http://localhost:{port}/api/login")
-    print(f"  GET  http://localhost:{port}/api/favorites?email=<email>")
+    print(f"  GET  http://localhost:{port}/api/favorites?username=<username>")
     print(f"  POST http://localhost:{port}/api/favorites/add")
     print(f"  POST http://localhost:{port}/api/favorites/remove")
     if ssl_context:
@@ -1018,7 +1019,7 @@ def run_server(port=80, https_port=443, dual_stack=True, use_https=True):
         print(f"  POST https://localhost:{https_port}/api/upload")
         print(f"  POST https://localhost:{https_port}/api/register")
         print(f"  POST https://localhost:{https_port}/api/login")
-        print(f"  GET  https://localhost:{https_port}/api/favorites?email=<email>")
+        print(f"  GET  https://localhost:{https_port}/api/favorites?username=<username>")
         print(f"  POST https://localhost:{https_port}/api/favorites/add")
         print(f"  POST https://localhost:{https_port}/api/favorites/remove")
     print()
