@@ -341,8 +341,15 @@ export default {
 
     // 添加收藏
     const addToFavorites = async (song) => {
+      console.log('添加收藏:', song)
       if (!isLoggedIn.value || !currentUser.value) {
         alert('请先登录后再收藏歌曲')
+        return false
+      }
+
+      if (!song || !song.filename) {
+        console.error('歌曲数据不完整:', song)
+        alert('歌曲数据不完整，无法收藏')
         return false
       }
 
@@ -357,16 +364,19 @@ export default {
         })
 
         const result = await response.json()
+        console.log('收藏结果:', result)
 
         if (result.success) {
           favorites.value = result.data
           return true
         } else {
           console.error('添加收藏失败:', result.error)
+          alert(result.error || '添加收藏失败')
           return false
         }
       } catch (error) {
         console.error('添加收藏失败:', error)
+        alert('网络错误，请重试')
         return false
       }
     }

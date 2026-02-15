@@ -855,6 +855,81 @@ body {
   transform: scale(1.1);
 }
 
+/* ==================== 右键菜单样式 ==================== */
+
+.context-menu {
+  position: fixed;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 180px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  animation: fadeIn 0.15s ease;
+}
+
+.context-menu-header {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 4px;
+}
+
+.context-menu-header i {
+  color: var(--accent-color);
+}
+
+.context-menu-title {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 4px 0;
+}
+
+.context-menu-item {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.context-menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.context-menu-item i {
+  font-size: 14px;
+  width: 16px;
+  color: var(--accent-color);
+}
+
+.context-menu-item.remove i {
+  color: #ef4444;
+}
+
+.context-menu-item.remove:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
 /* 搜索框 */
 .search-box {
   padding: 0 20px 15px;

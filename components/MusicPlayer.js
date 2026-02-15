@@ -40,6 +40,15 @@ export default {
     const autoPlayBlocked = ref(false)  // 自动播放被阻止标志
     const showUserMenu = ref(false)  // 用户菜单显示状态
 
+    // 右键菜单状态
+    const contextMenu = ref({
+      show: false,
+      x: 0,
+      y: 0,
+      song: null,
+      songIndex: -1
+    })
+
     // 计算属性
     const currentSong = computed(() => playlist.value[currentIndex.value] || {})
     const progressPercent = computed(() => {
@@ -762,15 +771,63 @@ export default {
       }
     }
 
+    // 显示右键菜单
+    const showContextMenu = (event, song, index) => {
+      event.preventDefault()
+      contextMenu.value = {
+        show: true,
+        x: event.clientX,
+        y: event.clientY,
+        song: song,
+        songIndex: index
+      }
+    }
+
+    // 隐藏右键菜单
+    const hideContextMenu = () => {
+      contextMenu.value.show = false
+    }
+
+    // 处理右键菜单点击
+    const handleContextMenuAction = (action) => {
+      const song = contextMenu.value.song
+      const index = contextMenu.value.songIndex
+
+      if (!song || index === -1) return
+
+      switch (action) {
+        case 'play':
+          playSong(index)
+          break
+        case 'addToFavorites':
+          if (props.isLoggedIn) {
+            emit('add-favorite', song)
+          } else {
+            alert('请先登录后再收藏歌曲')
+            emit('open-login')
+          }
+          break
+        case 'removeFromFavorites':
+          if (props.isLoggedIn) {
+            emit('remove-favorite', song.filename)
+          }
+          break
+      }
+
+      hideContextMenu()
+    }
+
     onMounted(() => {
       document.addEventListener('keydown', handleKeydown)
       document.addEventListener('visibilitychange', handleVisibilityChange)
+      document.addEventListener('click', hideContextMenu)
       loadMusicList()
     })
 
     onUnmounted(() => {
       document.removeEventListener('keydown', handleKeydown)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      document.removeEventListener('click', hideContextMenu)
     })
 
     return {
@@ -789,6 +846,7 @@ export default {
       autoPlayBlocked,
       showPlaylist,
       showUserMenu,
+      contextMenu,
       audioRef,
       currentSong,
       progressPercent,
@@ -810,6 +868,9 @@ export default {
       setVolume,
       startVolumeDrag,
       toggleMute,
+      showContextMenu,
+      hideContextMenu,
+      handleContextMenuAction,
       onTimeUpdate,
       onLoadedMetadata,
       onEnded,
@@ -1013,6 +1074,7 @@ export default {
             class="playlist-item"
             :class="{ 'active': currentIndex === playlist.indexOf(song) }"
             @click="playSong(playlist.indexOf(song))"
+            @contextmenu="showContextMenu($event, song, playlist.indexOf(song))"
           >
             <div class="item-number">
               <span v-if="currentIndex === index && isPlaying">
@@ -1039,7 +1101,7 @@ export default {
               @click.stop="favorites.some(f => f.filename === song.filename) ? $emit('remove-favorite', song.filename) : $emit('add-favorite', song)"
               :title="favorites.some(f => f.filename === song.filename) ? '取消收藏' : '添加到收藏'"
             >
-              <i :class="['fas', favorites.some(f => f.filename === song.filename) ? 'fa-heart' : 'fa-heart-o']"></i>
+              <i :class="['fas', favorites.some(f => f.filename === song.filename) ? 'fa-heart' : 'fa-regular fa-heart']"></i>
             </button>
             <div class="item-duration">{{ formatTime(song.duration) }}</div>
           </div>
@@ -1051,6 +1113,40 @@ export default {
         <span>空格: 播放/暂停</span>
         <span>← →: 切换歌曲</span>
         <span>↑ ↓: 音量调节</span>
+      </div>
+
+      <!-- 右键菜单 -->
+      <div
+        v-if="contextMenu.show"
+        class="context-menu"
+        :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+        @click.stop
+      >
+        <div class="context-menu-header">
+          <i class="fas fa-music"></i>
+          <span class="context-menu-title">{{ contextMenu.song?.title || '歌曲操作' }}</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <button class="context-menu-item" @click="handleContextMenuAction('play')">
+          <i class="fas fa-play"></i>
+          <span>播放</span>
+        </button>
+        <button
+          v-if="isLoggedIn && !favorites.some(f => f.filename === contextMenu.song?.filename)"
+          class="context-menu-item"
+          @click="handleContextMenuAction('addToFavorites')"
+        >
+          <i class="fas fa-heart"></i>
+          <span>添加到收藏</span>
+        </button>
+        <button
+          v-if="isLoggedIn && favorites.some(f => f.filename === contextMenu.song?.filename)"
+          class="context-menu-item remove"
+          @click="handleContextMenuAction('removeFromFavorites')"
+        >
+          <i class="fas fa-heart-broken"></i>
+          <span>取消收藏</span>
+        </button>
       </div>
     </div>
   `
