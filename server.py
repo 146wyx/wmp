@@ -149,6 +149,14 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
         # Default: Static file service
         super().do_GET()
 
+    def do_OPTIONS(self):
+        """Handle OPTIONS requests for CORS preflight"""
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
     def do_POST(self):
         """Handle POST requests"""
         parsed_path = urlparse(self.path)
