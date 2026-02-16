@@ -15,34 +15,6 @@
       "duration": 141
     },
     {
-      "id": 1,
-      "title": "3.6.5",
-      "artist": "EXO",
-      "album": "",
-      "cover": "/data/Segment/3.6.5 - EXO.jpg",
-      "url": "/data/music/3.6.5 - EXO.mp3",
-      "filename": "3.6.5 - EXO.mp3",
-      "hasLyrics": true,
-      "lrcUrl": "/data/lrc/3.6.5-EXO.lrc",
-      "hasCover": true,
-      "coverUrl": "/data/Segment/3.6.5 - EXO.jpg",
-      "duration": 187
-    },
-    {
-      "id": 2,
-      "title": "All Rise",
-      "artist": "Blue",
-      "album": "",
-      "cover": "/data/Segment/All Rise-Blue.jpg",
-      "url": "/data/music/All Rise-Blue.mp3",
-      "filename": "All Rise-Blue.mp3",
-      "hasLyrics": true,
-      "lrcUrl": "/data/lrc/All Rise-Blue.lrc",
-      "hasCover": true,
-      "coverUrl": "/data/Segment/All Rise-Blue.jpg",
-      "duration": 226
-    },
-    {
       "id": 4,
       "title": "HISTORY",
       "artist": "EXO",
@@ -55,6 +27,20 @@
       "hasCover": true,
       "coverUrl": "/data/Segment/HISTORY - EXO.jpg",
       "duration": 211
+    },
+    {
+      "id": 8,
+      "title": "Lucky",
+      "artist": "EXO",
+      "album": "",
+      "cover": "/data/Segment/Lucky - EXO.jpg",
+      "url": "/data/music/Lucky - EXO.mp3",
+      "filename": "Lucky - EXO.mp3",
+      "hasLyrics": true,
+      "lrcUrl": "/data/lrc/Lucky-EXO.lrc",
+      "hasCover": true,
+      "coverUrl": "/data/Segment/Lucky - EXO.jpg",
+      "duration": 203
     }
   ]
 }

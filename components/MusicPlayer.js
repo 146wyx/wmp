@@ -42,6 +42,8 @@ export default {
     const duration = ref(0)
     const volume = ref(0.7)
     const playMode = ref('sequence') // sequence, random, single
+    const playFromFavorites = ref(false) // 是否从喜欢列表播放
+    const currentFavoriteIndex = ref(0) // 当前播放的喜欢列表索引
     const isMuted = ref(false)
     const isDragging = ref(false)
     const isVolumeDragging = ref(false)
@@ -509,11 +511,18 @@ export default {
 
     // 播放指定歌曲
     const playSong = async (index) => {
+      console.log('playSong called with index:', index, 'playlist length:', playlist.value.length)
+      if (index < 0 || index >= playlist.value.length) {
+        console.error('Invalid index:', index)
+        return
+      }
+      
       currentIndex.value = index
       currentTime.value = 0
       lyrics.value = []
 
       const song = playlist.value[index]
+      console.log('Playing song:', song?.title, 'url:', song?.url)
 
       if (audioRef.value) {
         audioRef.value.load()
@@ -565,8 +574,49 @@ export default {
       }
     }
 
+    // 从播放列表播放歌曲（不标记为从喜欢列表播放）
+    const playFromPlaylist = (index) => {
+      playFromFavorites.value = false
+      playSong(index)
+    }
+
+    // 播放收藏列表中的歌曲
+    const playFavoriteSong = (song) => {
+      const index = playlist.value.findIndex(p => p.filename === song.filename)
+      if (index !== -1) {
+        // 找到这首歌在喜欢列表中的索引
+        const favIndex = favorites.value.findIndex(f => f.filename === song.filename)
+        playFromFavorites.value = true
+        currentFavoriteIndex.value = favIndex >= 0 ? favIndex : 0
+        playSong(index)
+      } else {
+        console.warn('歌曲不在播放列表中:', song.filename)
+        alert('该歌曲不在当前播放列表中')
+      }
+    }
+
     // 上一首
     const prevSong = () => {
+      // 如果从喜欢列表播放
+      if (playFromFavorites.value && favorites.value.length > 0) {
+        let newFavIndex
+        if (playMode.value === 'random') {
+          newFavIndex = Math.floor(Math.random() * favorites.value.length)
+        } else {
+          newFavIndex = currentFavoriteIndex.value === 0
+            ? favorites.value.length - 1
+            : currentFavoriteIndex.value - 1
+        }
+        currentFavoriteIndex.value = newFavIndex
+        const prevFavSong = favorites.value[newFavIndex]
+        const playlistIndex = playlist.value.findIndex(p => p.filename === prevFavSong.filename)
+        if (playlistIndex !== -1) {
+          playSong(playlistIndex)
+        }
+        return
+      }
+      
+      // 正常播放列表上一首
       if (playlist.value.length === 0) return
       let newIndex
       if (playMode.value === 'random') {
@@ -581,6 +631,26 @@ export default {
 
     // 下一首
     const nextSong = () => {
+      // 如果从喜欢列表播放
+      if (playFromFavorites.value && favorites.value.length > 0) {
+        let newFavIndex
+        if (playMode.value === 'random') {
+          newFavIndex = Math.floor(Math.random() * favorites.value.length)
+        } else {
+          newFavIndex = currentFavoriteIndex.value === favorites.value.length - 1
+            ? 0
+            : currentFavoriteIndex.value + 1
+        }
+        currentFavoriteIndex.value = newFavIndex
+        const nextFavSong = favorites.value[newFavIndex]
+        const playlistIndex = playlist.value.findIndex(p => p.filename === nextFavSong.filename)
+        if (playlistIndex !== -1) {
+          playSong(playlistIndex)
+        }
+        return
+      }
+      
+      // 正常播放列表下一首
       if (playlist.value.length === 0) return
       let newIndex
       if (playMode.value === 'random') {
@@ -851,6 +921,8 @@ export default {
       duration,
       volume,
       playMode,
+      playFromFavorites,
+      currentFavoriteIndex,
       isMuted,
       isDragging,
       isAudioReady,
@@ -869,6 +941,8 @@ export default {
       formatTime,
       togglePlay,
       playSong,
+      playFromPlaylist,
+      playFavoriteSong,
       prevSong,
       nextSong,
       togglePlayMode,
@@ -1076,7 +1150,7 @@ export default {
             :key="song.id"
             class="playlist-item"
             :class="{ 'active': currentIndex === playlist.indexOf(song) }"
-            @click="playSong(playlist.indexOf(song))"
+            @click="playFromPlaylist(playlist.indexOf(song))"
             @contextmenu="showContextMenu($event, song, playlist.indexOf(song))"
           >
             <div class="item-number">
@@ -1133,7 +1207,7 @@ export default {
             v-for="(song, index) in favorites"
             :key="song.filename"
             class="favorites-panel-item"
-            @click="playSong(playlist.findIndex(p => p.filename === song.filename))"
+            @click="playFavoriteSong(song)"
           >
             <img :src="song.cover || song.coverUrl || '/data/Segment/default.jpg'" :alt="song.title" class="favorites-item-cover">
             <div class="favorites-item-info">
