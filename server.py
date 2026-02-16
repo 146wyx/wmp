@@ -694,12 +694,16 @@ class MusicRequestHandler(SimpleHTTPRequestHandler):
             query_params = parse_qs(parsed_path.query)
             username = query_params.get('username', [''])[0].strip()
 
+            print(f"[GET_FAVORITES] Username: {username}")
+
             if not username:
                 self.send_json_response({'success': False, 'error': 'Username is required'}, 400)
                 return
 
             favorites = load_favorites()
+            print(f"[GET_FAVORITES] Loaded favorites: {favorites}")
             user_favorites = favorites.get(username, [])
+            print(f"[GET_FAVORITES] User favorites for {username}: {user_favorites}")
 
             self.send_json_response({
                 'success': True,

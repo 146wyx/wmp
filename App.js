@@ -328,17 +328,26 @@ export default {
 
     // 加载用户收藏列表
     const loadFavorites = async () => {
+      console.log('加载收藏列表...', 'isLoggedIn:', isLoggedIn.value, 'currentUser:', currentUser.value)
       if (!isLoggedIn.value || !currentUser.value) {
         favorites.value = []
+        console.log('未登录，清空收藏')
         return
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/favorites?username=${encodeURIComponent(currentUser.value.username)}`)
+        const url = `${API_BASE_URL}/api/favorites?username=${encodeURIComponent(currentUser.value.username)}`
+        console.log('请求URL:', url)
+        const response = await fetch(url)
+        console.log('响应状态:', response.status)
         const result = await response.json()
+        console.log('响应结果:', result)
 
         if (result.success) {
           favorites.value = result.data || []
+          console.log('收藏列表加载成功，数量:', favorites.value.length, '数据:', favorites.value)
+        } else {
+          console.error('加载收藏列表失败:', result.error)
         }
       } catch (error) {
         console.error('加载收藏列表失败:', error)
@@ -423,7 +432,12 @@ export default {
       loadAuthState()
       loginHistory.value = JSON.parse(localStorage.getItem('loginHistory') || '[]')
       document.addEventListener('click', handleClickOutside)
-      loadFavorites()
+      // 延迟加载收藏，避免和 watch 冲突
+      setTimeout(() => {
+        if (isLoggedIn.value && favorites.value.length === 0) {
+          loadFavorites()
+        }
+      }, 100)
     })
 
     // 监听登录状态变化，加载收藏

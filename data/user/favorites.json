@@ -1,6 +1,20 @@
 {
   "146wyx": [
     {
+      "id": 10,
+      "title": "Psychic",
+      "artist": "张艺兴",
+      "album": "",
+      "cover": "/data/Segment/Psychic-张艺兴.jpg",
+      "url": "/data/music/Psychic-张艺兴.mp3",
+      "filename": "Psychic-张艺兴.mp3",
+      "hasLyrics": true,
+      "lrcUrl": "/data/lrc/Psychic-张艺兴.lrc",
+      "hasCover": true,
+      "coverUrl": "/data/Segment/Psychic-张艺兴.jpg",
+      "duration": 141
+    },
+    {
       "id": 1,
       "title": "3.6.5",
       "artist": "EXO",
@@ -13,6 +27,34 @@
       "hasCover": true,
       "coverUrl": "/data/Segment/3.6.5 - EXO.jpg",
       "duration": 187
+    },
+    {
+      "id": 2,
+      "title": "All Rise",
+      "artist": "Blue",
+      "album": "",
+      "cover": "/data/Segment/All Rise-Blue.jpg",
+      "url": "/data/music/All Rise-Blue.mp3",
+      "filename": "All Rise-Blue.mp3",
+      "hasLyrics": true,
+      "lrcUrl": "/data/lrc/All Rise-Blue.lrc",
+      "hasCover": true,
+      "coverUrl": "/data/Segment/All Rise-Blue.jpg",
+      "duration": 226
+    },
+    {
+      "id": 4,
+      "title": "HISTORY",
+      "artist": "EXO",
+      "album": "",
+      "cover": "/data/Segment/HISTORY - EXO.jpg",
+      "url": "/data/music/HISTORY - EXO.mp3",
+      "filename": "HISTORY - EXO.mp3",
+      "hasLyrics": true,
+      "lrcUrl": "/data/lrc/HISTORY-EXO.lrc",
+      "hasCover": true,
+      "coverUrl": "/data/Segment/HISTORY - EXO.jpg",
+      "duration": 211
     }
   ]
 }

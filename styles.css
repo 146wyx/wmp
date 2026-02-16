@@ -453,7 +453,7 @@ body {
   flex-direction: column;
   transition: transform 0.3s ease;
   max-height: 600px;
-  border-radius: 0 20px 20px 0;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -853,6 +853,172 @@ body {
   opacity: 1;
   color: #ef4444;
   transform: scale(1.1);
+}
+
+/* ==================== 播放列表和喜欢列表容器 ==================== */
+
+.playlist-wrapper {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+/* ==================== 喜欢列表面板（悬浮在播放列表上方） ==================== */
+
+.favorites-panel {
+  position: fixed;
+  right: calc(50% - 450px - 200px - 20px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  max-height: 520px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.favorites-panel-header {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.favorites-panel-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.favorites-panel-header h3 i {
+  color: var(--accent-color);
+  font-size: 12px;
+}
+
+.favorites-panel-header .favorites-count {
+  background: var(--accent-color);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.favorites-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.favorites-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 8px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.favorites-empty i {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.favorites-empty p {
+  font-size: 11px;
+  margin: 0;
+}
+
+.favorites-panel-item {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.favorites-panel-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.favorites-panel-item:last-child {
+  margin-bottom: 0;
+}
+
+.favorites-item-cover {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.favorites-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.favorites-item-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+
+.favorites-item-artist {
+  font-size: 9px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favorites-item-remove {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 3px;
+  font-size: 9px;
+  opacity: 0;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.favorites-panel-item:hover .favorites-item-remove {
+  opacity: 0.6;
+}
+
+.favorites-item-remove:hover {
+  opacity: 1 !important;
+  color: #ef4444;
+}
+
+/* 响应式：小屏幕隐藏喜欢列表 */
+@media (max-width: 900px) {
+  .favorites-panel {
+    display: none;
+  }
 }
 
 /* ==================== 右键菜单样式 ==================== */

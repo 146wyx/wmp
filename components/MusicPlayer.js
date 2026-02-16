@@ -19,7 +19,15 @@ export default {
   },
   emits: ['open-upload', 'open-login', 'logout', 'change-password', 'add-favorite', 'remove-favorite', 'show-favorites'],
   setup(props, { emit }) {
-    const { ref, computed, onMounted, onUnmounted } = window.Vue
+    const { ref, computed, onMounted, onUnmounted, watch } = window.Vue
+
+    // 监听 favorites 变化
+    watch(() => props.favorites, (newVal) => {
+      console.log('MusicPlayer favorites changed:', newVal)
+    }, { immediate: true, deep: true })
+
+    // 计算属性：收藏列表
+    const favorites = computed(() => props.favorites || [])
 
     // 播放列表数据
     const playlist = ref([])
@@ -857,7 +865,7 @@ export default {
       lyricsContainerStyle,
       searchQuery,
       filteredPlaylist,
-      favorites: props.favorites,
+      favorites,
       formatTime,
       togglePlay,
       playSong,
@@ -982,61 +990,53 @@ export default {
         </button>
       </div>
 
-      <!-- 播放列表 -->
-      <div class="playlist" :class="{ 'show': showPlaylist }">
-        <div class="playlist-header">
-          <h3>播放列表</h3>
-          <div class="playlist-actions">
-            <!-- 收藏按钮（仅登录显示） -->
-            <button
-              v-if="isLoggedIn"
-              class="favorites-btn"
-              @click="$emit('show-favorites')"
-              title="我的收藏"
-            >
-              <i class="fas fa-heart"></i>
-              <span v-if="favorites.length > 0" class="favorites-count">{{ favorites.length }}</span>
-            </button>
-            <!-- 登录按钮/用户菜单 -->
-            <div v-if="!isLoggedIn" class="user-menu-container">
-              <button
-                class="login-btn-small"
-                @click="$emit('open-login')"
-                title="登录"
-              >
-                <i class="fas fa-user"></i>
-              </button>
-            </div>
-            <div v-else class="user-menu-container">
-              <button
-                class="login-btn-small logged-in"
-                @click="showUserMenu = !showUserMenu"
-                title="用户菜单"
-              >
-                <i class="fas fa-user-check"></i>
-              </button>
-              <!-- 用户下拉菜单 -->
-              <div v-if="showUserMenu" class="user-dropdown-menu">
-                <div class="user-info">
-                  <i class="fas fa-user-circle"></i>
-                  <span>{{ currentUser?.username || '用户' }}</span>
-                </div>
-                <div class="menu-divider"></div>
-                <button class="menu-item" @click="$emit('show-favorites'); showUserMenu = false">
-                  <i class="fas fa-heart"></i>
-                  我的收藏
-                  <span v-if="favorites.length > 0" class="menu-badge">{{ favorites.length }}</span>
-                </button>
-                <button class="menu-item" @click="$emit('change-password'); showUserMenu = false">
-                  <i class="fas fa-key"></i>
-                  修改密码
-                </button>
-                <button class="menu-item logout" @click="$emit('logout'); showUserMenu = false">
-                  <i class="fas fa-sign-out-alt"></i>
-                  退出登录
+      <!-- 播放列表和喜欢列表容器 -->
+      <div class="playlist-wrapper">
+        <!-- 播放列表 -->
+        <div class="playlist" :class="{ 'show': showPlaylist }">
+          <div class="playlist-header">
+            <h3>播放列表</h3>
+            <div class="playlist-actions">
+              <!-- 登录按钮/用户菜单 -->
+              <div v-if="!isLoggedIn" class="user-menu-container">
+                <button
+                  class="login-btn-small"
+                  @click="$emit('open-login')"
+                  title="登录"
+                >
+                  <i class="fas fa-user"></i>
                 </button>
               </div>
-            </div>
+              <div v-else class="user-menu-container">
+                <button
+                  class="login-btn-small logged-in"
+                  @click="showUserMenu = !showUserMenu"
+                  title="用户菜单"
+                >
+                  <i class="fas fa-user-check"></i>
+                </button>
+                <!-- 用户下拉菜单 -->
+                <div v-if="showUserMenu" class="user-dropdown-menu">
+                  <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ currentUser?.username || '用户' }}</span>
+                  </div>
+                  <div class="menu-divider"></div>
+                  <button class="menu-item" @click="$emit('show-favorites'); showUserMenu = false">
+                    <i class="fas fa-heart"></i>
+                    我的收藏
+                    <span v-if="favorites.length > 0" class="menu-badge">{{ favorites.length }}</span>
+                  </button>
+                  <button class="menu-item" @click="$emit('change-password'); showUserMenu = false">
+                    <i class="fas fa-key"></i>
+                    修改密码
+                  </button>
+                  <button class="menu-item logout" @click="$emit('logout'); showUserMenu = false">
+                    <i class="fas fa-sign-out-alt"></i>
+                    退出登录
+                  </button>
+                </div>
+              </div>
             <button class="refresh-btn" @click="loadMusicList" title="刷新列表">
               <i class="fas fa-sync-alt" :class="{ 'spin': isLoading }"></i>
             </button>
@@ -1100,16 +1100,57 @@ export default {
             <button
               v-if="isLoggedIn"
               class="favorite-btn"
-              :class="{ 'is-favorite': favorites.some(f => f.filename === song.filename) }"
-              @click.stop="favorites.some(f => f.filename === song.filename) ? $emit('remove-favorite', song.filename) : $emit('add-favorite', song)"
-              :title="favorites.some(f => f.filename === song.filename) ? '取消收藏' : '添加到收藏'"
+              :class="{ 'is-favorite': favorites && favorites.length > 0 && favorites.some(f => f && f.filename === song.filename) }"
+              @click.stop="favorites && favorites.length > 0 && favorites.some(f => f && f.filename === song.filename) ? $emit('remove-favorite', song.filename) : $emit('add-favorite', song)"
+              :title="favorites && favorites.length > 0 && favorites.some(f => f && f.filename === song.filename) ? '取消收藏' : '添加到收藏'"
             >
-              <i :class="['fas', favorites.some(f => f.filename === song.filename) ? 'fa-heart' : 'fa-regular fa-heart']"></i>
+              <i :class="favorites && favorites.length > 0 && favorites.some(f => f && f.filename === song.filename) ? 'fas fa-heart' : 'far fa-heart'"></i>
             </button>
             <div class="item-duration">{{ formatTime(song.duration) }}</div>
           </div>
         </div>
       </div>
+
+      <!-- 喜欢列表（仅登录可见，紧挨着播放列表） -->
+      <div v-if="isLoggedIn" class="favorites-panel">
+        <div class="favorites-panel-header">
+          <h3><i class="fas fa-heart"></i> 喜欢列表</h3>
+          <span v-if="favorites && favorites.length > 0" class="favorites-count">{{ favorites.length }}</span>
+        </div>
+        <div class="favorites-panel-content">
+          <!-- 调试信息 -->
+          <div style="color: #666; font-size: 10px; padding: 5px;">
+            favorites: {{ favorites ? favorites.length : 'null' }}
+          </div>
+          <div v-if="favorites && favorites.length > 0" style="color: #0f0; font-size: 10px; padding: 5px;">
+            有 {{ favorites.length }} 首收藏歌曲!
+          </div>
+          <div v-if="!favorites || favorites.length === 0" class="favorites-empty">
+            <i class="far fa-heart"></i>
+            <p>暂无喜欢的歌曲</p>
+          </div>
+          <div
+            v-for="(song, index) in favorites"
+            :key="song.filename"
+            class="favorites-panel-item"
+            @click="playSong(playlist.findIndex(p => p.filename === song.filename))"
+          >
+            <img :src="song.cover || song.coverUrl || '/data/Segment/default.jpg'" :alt="song.title" class="favorites-item-cover">
+            <div class="favorites-item-info">
+              <div class="favorites-item-title">{{ song.title }}</div>
+              <div class="favorites-item-artist">{{ song.artist }}</div>
+            </div>
+            <button
+              class="favorites-item-remove"
+              @click.stop="$emit('remove-favorite', song.filename)"
+              title="取消喜欢"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
       <!-- 快捷键提示 -->
       <div class="shortcuts-hint">
