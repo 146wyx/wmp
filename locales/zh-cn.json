@@ -1,0 +1,72 @@
+{
+  "server": {
+    "title": "音乐播放器服务器",
+    "starting": "正在启动服务器...",
+    "started": "服务器已启动",
+    "stopping": "正在停止服务器...",
+    "stopped": "服务器已停止"
+  },
+  "log": {
+    "labels": {
+      "INFO": "信息",
+      "OK": "成功",
+      "WARN": "警告",
+      "ERROR": "错误",
+      "DEBUG": "调试",
+      "SERVER": "服务器",
+      "DB": "数据库",
+      "REDIS": "缓存",
+      "DOWNLOAD": "下载"
+    }
+  },
+  "redis": {
+    "downloading": "正在下载 Redis...",
+    "downloaded": "Redis 下载完成",
+    "found": "找到 Redis 服务器",
+    "starting": "正在启动 Redis 服务器...",
+    "started": "Redis 服务器启动成功，端口: {port}",
+    "failed": "Redis 启动失败",
+    "stopping": "正在停止 Redis 服务器...",
+    "stopped": "Redis 服务器已停止"
+  },
+  "database": {
+    "initializing": "正在初始化数据库...",
+    "initialized": "数据库初始化完成",
+    "connected": "已连接到 Redis: {host}:{port}",
+    "syncing": "正在同步音乐文件...",
+    "synced": "已同步 {count} 个音乐文件",
+    "scanning": "正在扫描音乐文件...",
+    "found": "找到 {count} 个音乐文件"
+  },
+  "ssl": {
+    "loading_cert": "正在加载 SSL 证书...",
+    "cert_loaded": "证书加载完成",
+    "chain_loaded": "证书链加载完成",
+    "key_loaded": "私钥加载完成"
+  },
+  "http": {
+    "request": "请求",
+    "response": "响应",
+    "error": "错误"
+  },
+  "upload": {
+    "starting": "开始上传...",
+    "progress": "上传进度: {percent}%",
+    "success": "上传成功",
+    "failed": "上传失败"
+  },
+  "user": {
+    "login_success": "用户登录成功: {username}",
+    "login_failed": "用户登录失败",
+    "register_success": "用户注册成功: {username}",
+    "register_failed": "用户注册失败"
+  },
+  "download": {
+    "request": "请求下载音乐 ID: {music_id}",
+    "found": "找到音乐数据: {found}",
+    "error": "下载错误: {error}",
+    "launching": "正在启动下载器...",
+    "launched": "下载器已启动",
+    "failed": "下载器启动失败"
+  }
+}

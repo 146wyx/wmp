@@ -1,0 +1,72 @@
+{
+  "server": {
+    "title": "Music Player Server",
+    "starting": "Starting server...",
+    "started": "Server started",
+    "stopping": "Stopping server...",
+    "stopped": "Server stopped"
+  },
+  "log": {
+    "labels": {
+      "INFO": "INFO",
+      "OK": "OK",
+      "WARN": "WARN",
+      "ERROR": "ERROR",
+      "DEBUG": "DEBUG",
+      "SERVER": "SERVER",
+      "DB": "DB",
+      "REDIS": "REDIS",
+      "DOWNLOAD": "DOWNLOAD"
+    }
+  },
+  "redis": {
+    "downloading": "Downloading Redis...",
+    "downloaded": "Redis downloaded",
+    "found": "Found Redis server",
+    "starting": "Starting Redis server...",
+    "started": "Redis server started on port {port}",
+    "failed": "Redis failed to start",
+    "stopping": "Stopping Redis server...",
+    "stopped": "Redis server stopped"
+  },
+  "database": {
+    "initializing": "Initializing database...",
+    "initialized": "Database initialized",
+    "connected": "Connected to Redis: {host}:{port}",
+    "syncing": "Syncing music files...",
+    "synced": "Synced {count} music files",
+    "scanning": "Scanning music files...",
+    "found": "Found {count} music files"
+  },
+  "ssl": {
+    "loading_cert": "Loading SSL certificate...",
+    "cert_loaded": "Certificate loaded",
+    "chain_loaded": "Certificate chain loaded",
+    "key_loaded": "Private key loaded"
+  },
+  "http": {
+    "request": "Request",
+    "response": "Response",
+    "error": "Error"
+  },
+  "upload": {
+    "starting": "Starting upload...",
+    "progress": "Upload progress: {percent}%",
+    "success": "Upload successful",
+    "failed": "Upload failed"
+  },
+  "user": {
+    "login_success": "User logged in: {username}",
+    "login_failed": "User login failed",
+    "register_success": "User registered: {username}",
+    "register_failed": "User registration failed"
+  },
+  "download": {
+    "request": "Request download music ID: {music_id}",
+    "found": "Music data found: {found}",
+    "error": "Download error: {error}",
+    "launching": "Launching downloader...",
+    "launched": "Downloader launched",
+    "failed": "Failed to launch downloader"
+  }
+}

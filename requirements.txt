@@ -1,0 +1,18 @@
+# Music Player Server Requirements
+# Python 3.8+ required
+
+# Web framework & HTTP
+requests>=2.28.0
+urllib3>=1.26.0
+
+# Database
+redis>=4.5.0
+
+# File watching (for real-time sync)
+watchdog>=3.0.0
+
+# Audio metadata (optional but recommended)
+mutagen>=1.47.0
+
+# SSL/TLS (usually included in Python standard library)
+# pyopenssl>=23.0.0  # Only needed if you encounter SSL issues

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线音乐下载 - Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 40px;
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #e94560;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-input::placeholder {
+            color: #666;
+        }
+        
+        .search-btn {
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+        
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .results-count {
+            color: #a0a0a0;
+        }
+        
+        .song-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .song-item:last-child {
+            border-bottom: none;
+        }
+        
+        .song-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .song-info {
+            flex: 1;
+        }
+        
+        .song-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .song-artist {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        
+        .download-btn {
+            padding: 10px 25px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 222, 128, 0.4);
+        }
+        
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .download-btn.downloading {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+        
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 500;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .message.show {
+            transform: translateX(0);
+        }
+        
+        .message.success {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+        
+        .message.error {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #a0a0a0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #e94560;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 在线音乐下载</h1>
+        <p class="subtitle">搜索并下载你喜欢的音乐</p>
+        
+        <div class="search-box">
+            <div class="search-input-group">
+                <input type="text" class="search-input" id="searchInput" placeholder="输入歌曲名或歌手名..." onkeypress="handleKeyPress(event)">
+                <button class="search-btn" id="searchBtn" onclick="searchSongs()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    搜索
+                </button>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在搜索...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="results-header">
+                <h3>搜索结果</h3>
+                <span class="results-count" id="resultsCount"></span>
+            </div>
+            <div class="song-list" id="songList"></div>
+        </div>
+        
+        <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <p>输入关键词搜索音乐</p>
+        </div>
+        
+        <a href="/" class="back-link">← 返回音乐播放器</a>
+    </div>
+    
+    <div class="message" id="message"></div>
+    
+    <script>
+        function showMessage(text, isError = false) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + (isError ? 'error' : 'success');
+            setTimeout(() => msg.classList.add('show'), 10);
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                searchSongs();
+            }
+        }
+        
+        async function searchSongs() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword) {
+                showMessage('请输入搜索关键词', true);
+                return;
+            }
+            
+            const searchBtn = document.getElementById('searchBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const emptyState = document.getElementById('emptyState');
+            
+            searchBtn.disabled = true;
+            loading.classList.add('show');
+            results.classList.remove('show');
+            emptyState.style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/search-songs?keyword=${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.songs);
+                } else {
+                    showMessage(data.error || '搜索失败', true);
+                    emptyState.style.display = 'block';
+                }
+            } catch (error) {
+                showMessage('搜索失败: ' + error.message, true);
+                emptyState.style.display = 'block';
+            } finally {
+                searchBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        }
+        
+        function displayResults(songs) {
+            const results = document.getElementById('results');
+            const songList = document.getElementById('songList');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            if (songs.length === 0) {
+                songList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                            <path d="M9 10h.01"></path>
+                            <path d="M15 10h.01"></path>
+                        </svg>
+                        <p>未找到相关歌曲</p>
+                    </div>
+                `;
+            } else {
+                songList.innerHTML = songs.map(song => `
+                    <div class="song-item" onclick="goToDetail('${song.id}')" style="cursor: pointer;">
+                        <div class="song-info">
+                            <div class="song-title">${escapeHtml(song.title)}</div>
+                            <div class="song-artist">${escapeHtml(song.artist)}</div>
+                        </div>
+                        <button class="download-btn" onclick="event.stopPropagation(); downloadSong('${song.id}', this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            resultsCount.textContent = `共 ${songs.length} 首`;
+            results.classList.add('show');
+        }
+        
+        async function downloadSong(musicId, btn) {
+            btn.disabled = true;
+            btn.classList.add('downloading');
+            btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                下载中...
+            `;
+            
+            try {
+                const response = await fetch(`/api/download-song?id=${musicId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`下载成功: ${data.title} - ${data.artist}`);
+                    btn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5"></path>
+                        </svg>
+                        已下载
+                    `;
+                    btn.style.background = 'linear-gradient(90deg, #4ade80, #22c55e)';
+                } else {
+                    showMessage(data.error || '下载失败', true);
+                    btn.disabled = false;
+                    btn.classList.remove('downloading');
+                    btn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        下载
+                    `;
+                }
+            } catch (error) {
+                showMessage('下载失败: ' + error.message, true);
+                btn.disabled = false;
+                btn.classList.remove('downloading');
+                btn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    下载
+                `;
+            }
+        }
+        
+        function goToDetail(musicId) {
+            window.location.href = `/DownMusic/GQB/${musicId}`;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

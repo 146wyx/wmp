@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歌曲详情 - Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #a0a0a0;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: color 0.3s;
+        }
+        
+        .back-btn:hover {
+            color: #e94560;
+        }
+        
+        .song-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .song-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .cover-container {
+            flex-shrink: 0;
+            width: 200px;
+            height: 200px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cover-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cover-placeholder {
+            font-size: 60px;
+            opacity: 0.3;
+        }
+        
+        .song-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .song-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .song-artist {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: fit-content;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4);
+        }
+        
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .download-btn.downloading {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+
+        .lyrics-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #60a5fa, #3b82f6);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: fit-content;
+            margin-top: 15px;
+        }
+
+        .lyrics-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .lyrics-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .lyrics-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .progress-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: none;
+        }
+        
+        .progress-section.show {
+            display: block;
+        }
+        
+        .progress-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 4px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        
+        .progress-text {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            text-align: center;
+            padding: 60px;
+            color: #ff6b6b;
+        }
+        
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 500;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .message.show {
+            transform: translateX(0);
+        }
+        
+        .message.success {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+        
+        .message.error {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/DownMusic" class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+            返回搜索
+        </a>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>正在加载歌曲信息...</p>
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <p>加载失败，请返回重试</p>
+        </div>
+        
+        <div id="content" style="display: none;">
+            <div class="song-card">
+                <div class="song-header">
+                    <div class="cover-container">
+                        <img id="coverImg" src="" alt="封面" style="display: none;">
+                        <div id="coverPlaceholder" class="cover-placeholder">🎵</div>
+                    </div>
+                    <div class="song-info">
+                        <h1 class="song-title" id="songTitle">-</h1>
+                        <p class="song-artist" id="songArtist">-</p>
+                        <button class="download-btn" id="downloadBtn" onclick="autoDownload()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载到服务器
+                        </button>
+                        <button class="lyrics-btn" id="lyricsBtn" onclick="downloadLyrics()" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13"></path>
+                                <circle cx="6" cy="18" r="3"></circle>
+                                <circle cx="18" cy="16" r="3"></circle>
+                            </svg>
+                            获取歌词
+                        </button>
+                        <div class="lyrics-status" id="lyricsStatus"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-section" id="progressSection">
+                <h3>📥 下载进度</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">准备下载...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message" id="message"></div>
+    
+    <script>
+        // 从 URL 获取歌曲 ID
+        const pathParts = window.location.pathname.split('/');
+        const musicId = pathParts[pathParts.length - 1];
+        
+        let songInfo = null;
+        
+        function showMessage(text, isError = false) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + (isError ? 'error' : 'success');
+            setTimeout(() => msg.classList.add('show'), 10);
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+        
+        async function loadSongInfo() {
+            try {
+                const response = await fetch(`/api/song-info?id=${musicId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    songInfo = data.info;
+                    displaySongInfo(data.info);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Failed to load song info:', error);
+                showError();
+            }
+        }
+        
+        function displaySongInfo(info) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            document.getElementById('songTitle').textContent = info.title || '未知歌曲';
+            document.getElementById('songArtist').textContent = info.artist || '未知歌手';
+
+            if (info.cover_url) {
+                const img = document.getElementById('coverImg');
+                img.src = info.cover_url;
+                img.style.display = 'block';
+                document.getElementById('coverPlaceholder').style.display = 'none';
+            }
+
+            // 检查是否有歌词
+            const lyricsBtn = document.getElementById('lyricsBtn');
+            const lyricsStatus = document.getElementById('lyricsStatus');
+            if (info.has_lyrics) {
+                lyricsStatus.textContent = '✅ 已有歌词';
+            } else {
+                lyricsStatus.textContent = 'GQB暂无歌词将从第三方获取';
+            }
+        }
+        
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+        
+        async function autoDownload() {
+            const btn = document.getElementById('downloadBtn');
+            const progressSection = document.getElementById('progressSection');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            btn.disabled = true;
+            btn.classList.add('downloading');
+            btn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                下载中...
+            `;
+
+            progressSection.classList.add('show');
+            progressFill.style.width = '10%';
+            progressText.textContent = '正在下载到服务器...';
+
+            try {
+                // 直接调用下载 API
+                const response = await fetch(`/api/download-song?id=${musicId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = '下载完成！';
+
+                    showMessage(`✅ 下载成功: ${data.title} - ${data.artist}`);
+
+                    btn.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5"></path>
+                        </svg>
+                        已下载到服务器
+                    `;
+                    btn.style.background = 'linear-gradient(90deg, #4ade80, #22c55e)';
+                } else {
+                    throw new Error(data.error || '下载失败');
+                }
+            } catch (error) {
+                showMessage('❌ 下载失败: ' + error.message, true);
+                progressText.textContent = '下载失败: ' + error.message;
+                progressFill.style.background = '#ef4444';
+
+                btn.disabled = false;
+                btn.classList.remove('downloading');
+                btn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    下载到服务器
+                `;
+            }
+        }
+
+        async function downloadLyrics() {
+            const btn = document.getElementById('lyricsBtn');
+            const status = document.getElementById('lyricsStatus');
+
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                获取中...
+            `;
+
+            try {
+                const response = await fetch(`/api/download-lyrics?id=${musicId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    status.textContent = '✅ 歌词已保存';
+                    btn.style.display = 'none';
+                    showMessage('✅ 歌词下载成功');
+                } else {
+                    throw new Error(data.error || '获取歌词失败');
+                }
+            } catch (error) {
+                status.textContent = '❌ 获取失败: ' + error.message;
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    获取歌词
+                `;
+            }
+        }
+
+        loadSongInfo();
+    </script>
+</body>
+</html>

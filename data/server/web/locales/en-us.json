@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Music Player",
+    "loading": "Initializing player...",
+    "empty": "No music",
+    "upload": "Click to upload music"
+  },
+  "player": {
+    "play": "Play",
+    "pause": "Pause",
+    "previous": "Previous",
+    "next": "Next",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume",
+    "playlist": "Playlist",
+    "favorites": "Favorites",
+    "search": "Search songs, artists...",
+    "clear": "Clear search",
+    "noFavorites": "No favorites",
+    "addFavorite": "Click ♥ to add favorite",
+    "loginToFavorite": "Please login to add favorites",
+    "clickToPlay": "Click to play"
+  },
+  "song": {
+    "unknownTitle": "No song selected",
+    "unknownArtist": "-",
+    "duration": "Duration",
+    "lyrics": "Lyrics",
+    "hasLyrics": "Has lyrics",
+    "noLyrics": "No lyrics"
+  },
+  "upload": {
+    "title": "Upload Music Files",
+    "dragDrop": "Drag and drop files or folders here",
+    "supportFormats": "Supports MP3, WAV, FLAC, AAC, OGG, M4A formats",
+    "folderSupport": "Drag entire folders, auto-detect songs, lyrics (.lrc) and cover images",
+    "selectFiles": "Select Files",
+    "selectFolder": "Select Folder",
+    "uploading": "Uploading...",
+    "success": "Upload successful",
+    "error": "Upload failed",
+    "duplicate": "File already exists"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "rememberMe": "Remember me",
+    "loginError": "Login failed",
+    "registerError": "Registration failed",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidEmail": "Please enter a valid email address",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "passwordChanged": "Password changed successfully"
+  },
+  "shortcuts": {
+    "title": "Shortcuts",
+    "playPause": "Space: Play/Pause",
+    "prevNext": "← →: Previous/Next",
+    "volume": "↑ ↓: Volume control"
+  },
+  "contextMenu": {
+    "play": "Play",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites"
+  }
+}
